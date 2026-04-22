@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_sales_slip" model="ir.ui.view">
+        <field name="name">sale.order.form.sales.slip</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button
+                    name="action_print_sales_slip"
+                    string="列印銷貨單"
+                    type="object"
+                    class="btn-secondary"
+                />
+            </xpath>
+            <xpath expr="//sheet//group[1]" position="inside">
+                <field name="document_type" widget="badge"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="銷貨單資訊">
+                    <group>
+                        <group>
+                            <field name="sales_slip_date"/>
+                            <field name="sales_slip_contact"/>
+                            <field name="sales_slip_phone"/>
+                            <field name="sales_slip_fax"/>
+                            <field name="sales_slip_invoice_number"/>
+                            <field name="sales_slip_tax_type"/>
+                        </group>
+                        <group>
+                            <field name="sales_slip_delivery_address"/>
+                            <field name="amount_received"/>
+                            <field name="amount_receivable" readonly="1"/>
+                            <field name="quantity_total" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="sales_slip_note" placeholder="備註"/>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
+                <field name="sales_slip_spec" optional="show"/>
+                <field name="sales_slip_note" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_quotation_tree_sales_slip" model="ir.ui.view">
+        <field name="name">sale.order.list.sales.slip</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="document_type" optional="show" widget="badge"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sales_order_filter_sales_slip" model="ir.ui.view">
+        <field name="name">sale.order.search.sales.slip</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <filter
+                    string="銷貨單"
+                    name="sales_slip_filter"
+                    domain="[('document_type', '=', 'sales_slip')]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_action_sales_slip" model="ir.actions.act_window">
+        <field name="name">銷貨單</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,kanban,pivot,graph,calendar,activity</field>
+        <field name="domain">[('document_type', '=', 'sales_slip')]</field>
+        <field name="context">{'search_default_sales_slip_filter': 1, 'default_document_type': 'sales_slip'}</field>
+    </record>
+
+    <menuitem
+        id="sale_menu_sales_slip"
+        name="銷貨單"
+        parent="sale.sale_order_menu"
+        action="sale_order_action_sales_slip"
+        sequence="25"
+    />
+</odoo>

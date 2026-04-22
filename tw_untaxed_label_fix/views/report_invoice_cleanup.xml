@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_remove_payment_communication" inherit_id="account.report_invoice_document">
+        <xpath expr="//p[@name='payment_communication']" position="replace"/>
+        <xpath expr="//div[@id='partner_vat_address_not_same_as_shipping']" position="replace"/>
+        <xpath expr="//div[@id='partner_vat_address_same_as_shipping']" position="replace"/>
+        <xpath expr="//div[@id='partner_vat_no_shipping']" position="replace"/>
+    </template>
+
+    <template id="external_layout_standard_remove_report_footer" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[contains(@class, 'o_footer_content')]/div[@t-field='company.report_footer']" position="replace"/>
+        <xpath expr="//div[@name='company_address']" position="replace">
+            <div name="company_address" class="col-5 offset-1" style="margin-top: -22px;">
+                <ul class="list-unstyled" name="company_address_list">
+                    <li t-if="company.is_company_details_empty">
+                        <span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                    </li>
+                    <li t-else="">
+                        <span t-field="company.company_details"/>
+                    </li>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="external_layout_folder_remove_tax_id" inherit_id="web.external_layout_folder">
+        <xpath expr="//div[@name='company_address']" position="replace">
+            <div name="company_address" class="w-50 text-end">
+                <ul class="list-unstyled" name="company_address_list">
+                    <li t-if="company.is_company_details_empty">
+                        <span t-field="company.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}'/>
+                    </li>
+                    <li t-else="">
+                        <span t-field="company.company_details"/>
+                    </li>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="external_layout_folder_remove_report_footer" inherit_id="web.external_layout_folder">
+        <xpath expr="//div[contains(@class, 'o_footer_content')]/div[@t-field='company.report_footer']" position="replace"/>
+    </template>
+</odoo>

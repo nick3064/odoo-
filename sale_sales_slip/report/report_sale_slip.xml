@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_sale_sales_slip" model="ir.actions.report">
+        <field name="name">銷貨單</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sale_sales_slip.report_sale_sales_slip_document</field>
+        <field name="report_file">sale_sales_slip.report_sale_sales_slip_document</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'銷貨單 - %s' % (object.name)</field>
+    </record>
+
+    <template id="report_sale_sales_slip_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 style="text-align:center; margin-bottom: 16px;">銷貨單</h2>
+                        <table class="table table-sm table-borderless" style="width:100%; margin-bottom: 16px;">
+                            <tr>
+                                <td><strong>銷貨單號：</strong><span t-field="o.name"/></td>
+                                <td><strong>銷貨日期：</strong><span t-field="o.sales_slip_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>客戶名稱：</strong><span t-field="o.partner_id"/></td>
+                                <td><strong>聯絡人：</strong><span t-esc="o.sales_slip_contact or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>聯絡電話：</strong><span t-esc="o.sales_slip_phone or ''"/></td>
+                                <td><strong>傳真號碼：</strong><span t-esc="o.sales_slip_fax or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><strong>送貨地址：</strong><span t-esc="o.sales_slip_delivery_address or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>統一編號：</strong><span t-esc="o.partner_id.vat or ''"/></td>
+                                <td><strong>業務人員：</strong><span t-esc="o.user_id.name or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>發票號碼：</strong><span t-esc="o.sales_slip_invoice_number or ''"/></td>
+                                <td><strong>課稅別：</strong><span t-esc="dict(o._fields['sales_slip_tax_type'].selection).get(o.sales_slip_tax_type, '')"/></td>
+                            </tr>
+                        </table>
+
+                        <table class="table table-sm o_main_table table-bordered" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>品名</th>
+                                    <th>規格</th>
+                                    <th class="text-end">數量</th>
+                                    <th class="text-end">單價</th>
+                                    <th class="text-end">金額</th>
+                                    <th>備註</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.order_line" t-as="line">
+                                    <td><span t-esc="line.product_id.display_name or line.name"/></td>
+                                    <td><span t-esc="line.sales_slip_spec or ''"/></td>
+                                    <td class="text-end"><span t-field="line.product_uom_qty"/></td>
+                                    <td class="text-end"><span t-field="line.price_unit"/></td>
+                                    <td class="text-end"><span t-field="line.price_subtotal"/></td>
+                                    <td><span t-esc="line.sales_slip_note or ''"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt-4">
+                            <div class="col-7">
+                                <p><strong>備註：</strong><span t-esc="o.sales_slip_note or ''"/></p>
+                                <p><strong>客戶簽章：</strong></p>
+                            </div>
+                            <div class="col-5">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td><strong>數量總計：</strong></td>
+                                        <td class="text-end"><span t-field="o.quantity_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>小計：</strong></td>
+                                        <td class="text-end"><span t-field="o.amount_untaxed"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>稅額：</strong></td>
+                                        <td class="text-end"><span t-field="o.amount_tax"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>總計：</strong></td>
+                                        <td class="text-end"><span t-field="o.amount_total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>應收帳款：</strong></td>
+                                        <td class="text-end"><span t-field="o.amount_receivable"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>已收金額：</strong></td>
+                                        <td class="text-end"><span t-field="o.amount_received"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

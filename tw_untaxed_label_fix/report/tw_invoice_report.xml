@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_tw_invoice_certificate" model="ir.actions.report">
+        <field name="name">台灣電子發票證明聯</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tw_untaxed_label_fix.report_tw_invoice_certificate</field>
+        <field name="report_file">tw_untaxed_label_fix.report_tw_invoice_certificate</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'電子發票證明聯 - %s' % (object.name or object.ref or 'invoice')</field>
+    </record>
+
+    <template id="report_tw_invoice_certificate_document" inherit_id="account.report_invoice_document" primary="True">
+        <xpath expr="//div[@class='row'][1]" position="replace">
+            <div class="row"/>
+        </xpath>
+
+        <xpath expr="//t[@t-set='layout_document_title']" position="replace">
+            <t t-set="layout_document_title"/>
+        </xpath>
+
+        <xpath expr="//div[contains(@class, 'page')][1]" position="replace">
+            <t t-set="tax_type" t-value="o._get_tw_tax_type()"/>
+            <t t-set="tw_note_text" t-value="o.tw_report_note or ''"/>
+            <div class="page tw-invoice-sheet" style="padding: 8px 12px 0; font-size: 14px; line-height: 1.45; color: #111;">
+                <style>
+                    .tw-invoice-sheet,
+                    .tw-invoice-sheet table,
+                    .tw-invoice-sheet td,
+                    .tw-invoice-sheet th,
+                    .tw-invoice-sheet div,
+                    .tw-invoice-sheet span,
+                    .tw-invoice-sheet p {
+                        font-family: "Noto Sans CJK TC", "Microsoft JhengHei", sans-serif !important;
+                    }
+                    .tw-invoice-sheet .tw-title {
+                        text-align: center;
+                        font-size: 24px;
+                        font-weight: 700;
+                        letter-spacing: 0.25em;
+                        margin: 0 0 8px;
+                    }
+                    .tw-invoice-sheet .tw-meta,
+                    .tw-invoice-sheet .tw-parties,
+                    .tw-invoice-sheet .tw-lines,
+                    .tw-invoice-sheet .tw-summary {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    .tw-invoice-sheet .tw-meta td {
+                        padding: 2px 0 6px;
+                        vertical-align: bottom;
+                    }
+                    .tw-invoice-sheet .tw-label {
+                        white-space: nowrap;
+                        font-weight: 600;
+                        letter-spacing: 0.15em;
+                    }
+                    .tw-invoice-sheet .tw-parties td {
+                        border: 1px solid #000;
+                        padding: 6px 8px;
+                        vertical-align: top;
+                    }
+                    .tw-invoice-sheet .tw-lines th,
+                    .tw-invoice-sheet .tw-lines td {
+                        border: 1px solid #000;
+                        padding: 6px 8px;
+                    }
+                    .tw-invoice-sheet .tw-lines th {
+                        text-align: center;
+                        font-weight: 700;
+                    }
+                    .tw-invoice-sheet .tw-right {
+                        text-align: right;
+                    }
+                    .tw-invoice-sheet .tw-center {
+                        text-align: center;
+                    }
+                    .tw-invoice-sheet .tw-summary td {
+                        border: 1px solid #000;
+                        padding: 6px 8px;
+                        vertical-align: top;
+                    }
+                    .tw-invoice-sheet .tw-summary-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    .tw-invoice-sheet .tw-summary-table td {
+                        border: 0;
+                        border-bottom: 1px solid #000;
+                        padding: 6px 0;
+                        vertical-align: middle;
+                    }
+                    .tw-invoice-sheet .tw-summary-table tr:last-child td {
+                        border-bottom: 0;
+                    }
+                    .tw-invoice-sheet .tw-summary-amount {
+                        text-align: right;
+                        white-space: nowrap;
+                        font-weight: 700;
+                        padding-left: 12px !important;
+                    }
+                    .tw-invoice-sheet .tw-check {
+                        display: inline-block;
+                        min-width: 74px;
+                        margin-right: 6px;
+                    }
+                    .tw-invoice-sheet .tw-check-box {
+                        display: inline-block;
+                        width: 16px;
+                        text-align: center;
+                        margin-left: 3px;
+                        border-bottom: 1px solid #000;
+                    }
+                    .tw-invoice-sheet .tw-amount-row {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: baseline;
+                        gap: 12px;
+                        margin-bottom: 4px;
+                    }
+                    .tw-invoice-sheet .tw-amount-row:last-child {
+                        margin-bottom: 0;
+                    }
+                    .tw-invoice-sheet .tw-amount-row strong {
+                        font-weight: 700;
+                    }
+                    .tw-invoice-sheet .tw-stamp {
+                        min-height: 108px;
+                        text-align: center;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        gap: 10px;
+                    }
+                    .tw-invoice-sheet .tw-note {
+                        font-size: 12px;
+                        line-height: 1.5;
+                    }
+                    .tw-invoice-sheet .tw-note-block {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 10px;
+                    }
+                    .tw-invoice-sheet .tw-note-block td {
+                        border: 1px solid #000;
+                        padding: 8px;
+                        vertical-align: top;
+                    }
+                </style>
+
+                <div class="tw-title">電子發票證明聯</div>
+
+                <table class="tw-meta" style="margin-bottom: 8px;">
+                    <tr>
+                        <td style="width: 34%;">
+                            <span class="tw-label">開立日期：</span>
+                            <span t-field="o.invoice_date"/>
+                        </td>
+                        <td style="width: 66%; text-align: center; font-size: 22px; font-weight: 700;">
+                            發票號碼：<span t-esc="o.name or ''"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tw-parties" style="margin-bottom: 10px;">
+                    <tr>
+                        <td style="width: 50%;">
+                            <div><span class="tw-label">買方：</span><span t-esc="o.partner_id.name or ''"/></div>
+                            <div><span class="tw-label">統一編號：</span><span t-esc="o.partner_id.vat or ''"/></div>
+                            <div>
+                                <span class="tw-label">地址：</span>
+                                <span t-esc="' '.join(filter(None, [
+                                    o.partner_id.state_id and o.partner_id.state_id.name or '',
+                                    o.partner_id.city or '',
+                                    o.partner_id.street or '',
+                                    o.partner_id.street2 or '',
+                                ]))"/>
+                            </div>
+                        </td>
+                        <td style="width: 50%;">
+                            <div><span class="tw-label">賣方：</span><span t-esc="o.company_id.name or ''"/></div>
+                            <div><span class="tw-label">統一編號：</span><span t-esc="o.company_id.vat or ''"/></div>
+                            <div>
+                                <span class="tw-label">地址：</span>
+                                <span t-esc="' '.join(filter(None, [
+                                    o.company_id.partner_id.state_id and o.company_id.partner_id.state_id.name or '',
+                                    o.company_id.partner_id.city or '',
+                                    o.company_id.partner_id.street or '',
+                                    o.company_id.partner_id.street2 or '',
+                                ])) or '臺北市大安區光武里忠孝東路４段７１―５號６樓'"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="tw-lines" style="margin-bottom: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 48%;">品名</th>
+                            <th style="width: 10%;">數量</th>
+                            <th style="width: 10%;">單位</th>
+                            <th style="width: 16%;">單價</th>
+                            <th style="width: 16%;">金額</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.invoice_line_ids.filtered(lambda l: l.display_type == 'product')" t-as="line">
+                            <td><span t-esc="line.name or line.product_id.display_name or ''"/></td>
+                            <td class="tw-center"><span t-field="line.quantity"/></td>
+                            <td class="tw-center"><span t-esc="line.product_uom_id.name or ''"/></td>
+                            <td class="tw-right"><span t-field="line.price_unit"/></td>
+                            <td class="tw-right"><span t-field="line.price_subtotal"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="tw-note-block">
+                    <tr>
+                        <td style="width: 14%;"><span class="tw-label">備註</span></td>
+                        <td style="width: 86%;"><span t-esc="tw_note_text"/></td>
+                    </tr>
+                </table>
+
+                <table class="tw-summary">
+                    <tr>
+                        <td style="width: 70%;">
+                            <table class="tw-summary-table">
+                                <tr>
+                                    <td style="width: 22%;"><span class="tw-label">銷售額合計</span></td>
+                                    <td style="width: 53%;"></td>
+                                    <td class="tw-summary-amount" style="width: 25%;"><span t-field="o.amount_untaxed"/></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="tw-label">營業稅額</span></td>
+                                    <td>
+                                        <span class="tw-check">應稅<span class="tw-check-box"><span t-esc="'√' if tax_type == 'taxed' else ''"/></span></span>
+                                        <span class="tw-check">零稅率<span class="tw-check-box"><span t-esc="'√' if tax_type == 'zero' else ''"/></span></span>
+                                        <span class="tw-check">免稅<span class="tw-check-box"><span t-esc="'√' if tax_type == 'exempt' else ''"/></span></span>
+                                    </td>
+                                    <td class="tw-summary-amount"><span t-field="o.amount_tax"/></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="tw-label">總計</span></td>
+                                    <td></td>
+                                    <td class="tw-summary-amount"><span t-field="o.amount_total"/></td>
+                                </tr>
+                            </table>
+                            <div class="tw-amount-row" style="display: block; margin-top: 8px;">
+                                <span class="tw-label">總計新台幣（中文大寫）</span>
+                                <span t-esc="o._get_tw_invoice_amount_in_words()"/>
+                            </div>
+                        </td>
+                        <td style="width: 30%;">
+                            <div class="tw-stamp">
+                                <div style="font-weight: 700;">營業人蓋統一發票專用章</div>
+                                <div class="tw-note">已條列營業人資料者得免蓋章</div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_tw_invoice_certificate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="tw_untaxed_label_fix.report_tw_invoice_certificate_document" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

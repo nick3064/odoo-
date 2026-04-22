@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="document_tax_totals_template_tw_wording" inherit_id="account.document_tax_totals_template">
+        <xpath expr="//tr[@class='o_subtotal']/td/span[@t-out=&quot;subtotal['name']&quot;]" position="replace">
+            <span t-if="subtotal['name'] in ('Untaxed Amount', '未連稅金額')">未稅金額</span>
+            <span t-else="" t-out="subtotal['name']">Untaxed Amount</span>
+        </xpath>
+    </template>
+</odoo>
