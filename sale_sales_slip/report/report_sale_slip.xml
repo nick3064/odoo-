@@ -89,14 +89,6 @@
                                         <td><strong>總計：</strong></td>
                                         <td class="text-end"><span t-field="o.amount_total"/></td>
                                     </tr>
-                                    <tr>
-                                        <td><strong>應收帳款：</strong></td>
-                                        <td class="text-end"><span t-field="o.amount_receivable"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>已收金額：</strong></td>
-                                        <td class="text-end"><span t-field="o.amount_received"/></td>
-                                    </tr>
                                 </table>
                             </div>
                         </div>
