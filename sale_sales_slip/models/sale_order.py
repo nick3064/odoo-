@@ -20,7 +20,14 @@ class SaleOrder(models.Model):
     sales_slip_phone = fields.Char(string="聯絡電話")
     sales_slip_fax = fields.Char(string="傳真號碼")
     sales_slip_delivery_address = fields.Char(string="送貨地址")
-    sales_slip_invoice_number = fields.Char(string="發票號碼")
+    sales_slip_invoice_number_manual = fields.Char(string="手動發票號碼")
+    sales_slip_invoice_number = fields.Char(
+        string="發票號碼",
+        compute="_compute_sales_slip_invoice_number",
+        inverse="_inverse_sales_slip_invoice_number",
+        store=True,
+        readonly=False,
+    )
     sales_slip_tax_type = fields.Selection(
         selection=[
             ("taxed", "應稅"),
@@ -53,6 +60,30 @@ class SaleOrder(models.Model):
     def _compute_quantity_total(self):
         for order in self:
             order.quantity_total = sum(order.order_line.mapped("product_uom_qty"))
+
+    @api.depends(
+        "sales_slip_invoice_number_manual",
+        "invoice_ids.name",
+        "invoice_ids.state",
+        "invoice_ids.move_type",
+    )
+    def _compute_sales_slip_invoice_number(self):
+        for order in self:
+            if order.sales_slip_invoice_number_manual:
+                order.sales_slip_invoice_number = order.sales_slip_invoice_number_manual
+                continue
+
+            invoices = order.invoice_ids.filtered(
+                lambda move: move.state != "cancel"
+                and move.move_type in ("out_invoice", "out_refund")
+                and move.name
+                and move.name != "/"
+            )
+            order.sales_slip_invoice_number = "、".join(invoices.mapped("name"))
+
+    def _inverse_sales_slip_invoice_number(self):
+        for order in self:
+            order.sales_slip_invoice_number_manual = order.sales_slip_invoice_number
 
     @api.onchange("partner_id")
     def _onchange_partner_id_fill_sales_slip_fields(self):
