@@ -25,7 +25,6 @@ class SaleOrder(models.Model):
         string="發票號碼",
         compute="_compute_sales_slip_invoice_number",
         inverse="_inverse_sales_slip_invoice_number",
-        store=True,
         readonly=False,
     )
     sales_slip_tax_type = fields.Selection(

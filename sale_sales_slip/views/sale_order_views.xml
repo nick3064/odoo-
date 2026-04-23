@@ -16,6 +16,9 @@
             <xpath expr="//sheet//group[1]" position="inside">
                 <field name="document_type" widget="badge"/>
             </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="sales_slip_invoice_number"/>
+            </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="銷貨單資訊">
                     <group>
@@ -24,7 +27,6 @@
                             <field name="sales_slip_contact"/>
                             <field name="sales_slip_phone"/>
                             <field name="sales_slip_fax"/>
-                            <field name="sales_slip_invoice_number"/>
                             <field name="sales_slip_tax_type"/>
                         </group>
                         <group>
